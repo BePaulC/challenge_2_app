@@ -27,29 +27,27 @@ def execute_sf_query_table(query):
 
     with my_cnx.cursor() as my_cur:
 
-        # Execute the query
+        # Execute Query
         my_cur.execute(query)
 
-        # Get the table header
+        # Get table header & rows
         header = [x[0] for x in my_cur.description]
-
-        # get the table rows
         rows = my_cur.fetchall()
         
-    # Close the query
+    # Close Query
     my_cnx.close()
 
-    # Return the query in a dataframe
+    # Return Query in a dataframe
     return(pd.DataFrame(rows, columns = header))
 
 
-# Get a table in snowflake based on its name
+# Get a table in Snowflake based on its name
 
 def get_table(table_name, limit):
     if type(limit) == int:
-        return(execute_sf_query_table("select * from " + table_name + " limit "+ str(limit)))
+        return(execute_sf_query_table("select * from " + table_name + " limit " + str(limit)))
     else:
-        return(execute_sf_query_table("select * from " + table_name + ""))
+        return(execute_sf_query_table("select * from " + table_name))
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -78,20 +76,31 @@ st.header('Q1 - Housing sales between two dates 📆')
 # User Input
 col_1, col_2 = st.columns(2)
 
-# Select the first date
+# Select first date
 d1 = col_1.date_input(
      "First day",
      datetime.date(2020, 1, 1)
      )
 
-# Select the second date
+# Select second date
 d2 = col_2.date_input(
      "Last day",
      datetime.date(2020, 3, 31)
      )
 
 # Snowflake Query 
-my_query_results = execute_sf_query_table("select transaction_date, local_type, sum(count(*)) over (partition by transaction_date, local_type) as daily_sales_count from sales where (transaction_date <= '"+d2.strftime('%Y-%m-%d')+"' and transaction_date >= '"+d1.strftime('%Y-%m-%d')+"') group by transaction_date, local_type order by transaction_date asc")
+my_query_results = execute_sf_query_table("""
+    select 
+        transaction_date, 
+        local_type, 
+        sum(count(*)) over (partition by transaction_date, local_type) as daily_sales_count 
+        
+        from sales 
+        
+    where (transaction_date <= '""" + d2.strftime('%Y-%m-%d') + """' and transaction_date >= '""" + d1.strftime('%Y-%m-%d') + """') 
+    group by transaction_date, local_type 
+    order by transaction_date 
+    """)
 
 # Exercise Answer
 st.text('')
@@ -147,7 +156,8 @@ st.plotly_chart(fig2)
 # ---------------------------------------------------------------------------------------------------------
 
 # Title
-st.header('Thrid query: Average squarred meter price per department 💵')
+st.markdown("""---""")
+st.header('Q3 - Average squarred meter price per department 💵')
 
 # Snowflake Query 
 my_query_results_3 = execute_sf_query_table("select dept_code, avg(transaction_value/carrez_surface) as avg_sqm_price from sales group by dept_code order by avg_sqm_price desc")
@@ -170,8 +180,9 @@ st.plotly_chart(fig3)
 # Exercise 4 - get the average square meter price per region
 # ---------------------------------------------------------------------------------------------------------
 
-# Exercise title
-st.header('Fourth query: Average squarred meter price per region 🏡/🏢')
+# Title
+st.markdown("""---""")
+st.header('Q4 - Average squarred meter price per region 🏡/🏢')
 
 # Dept code input
 region_list = execute_sf_query_table("select distinct new_region from dept_info")['NEW_REGION'].to_list()
@@ -186,34 +197,40 @@ col1, col2 = st.columns(2)
 col1.metric("🏡", str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Maison']['AVG_SQM_PRICE'].values[0]))+ " €")
 col2.metric("🏢", str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Appartement']['AVG_SQM_PRICE'].values[0]))+ " €")
 
-# ------------------------
-# Fifth exercise, get the top 10 higher-priced appartments
-# ------------------------
 
-# Exercise title
-st.header('Fifth query: Top 10 higher priced appartments sold 🏢')
+# ---------------------------------------------------------------------------------------------------------
+# Exercise 5 - get the top 10 higher-priced appartments
+# ---------------------------------------------------------------------------------------------------------
+
+# Title
+st.markdown("""---""")
+st.header('Q5 - Top 10 most expensive flats 🏢')
 
 # Answer the question
 st.dataframe(execute_sf_query_table("select transaction_value, street_number, street_type, city_name, dept_code, carrez_surface, room_number from sales where (transaction_value is not null and local_type='Appartement') order by transaction_value desc limit 10"))
 
-# ------------------------
-# Sixth exercise, get the sales number evolution
-# ------------------------
 
-# Exercise title
-st.header('Sixth query: Sales number evolution for the second quarter 📈')
+# ---------------------------------------------------------------------------------------------------------
+# Exercise 6 - get the sales number evolution
+# ---------------------------------------------------------------------------------------------------------
+
+# Title
+st.markdown("""---""")
+st.header('Q6 - Sales number evolution for the second quarter 📈')
 
 # Answer the question
 first_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-01-01' and transaction_date<'2020-03-31')").values[0][0]
 second_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-04-01' and transaction_date<='2020-07-31')").values[0][0]
 st.metric("Second semester sales number",second_sem_sales_count, str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)")
 
-# ------------------------
-# Seventh exercise, get thesales number evolution
-# ------------------------
 
-# Exercise title
-st.header('Seventh query: Departments with a high sales number increase between the first and the second semester 💸')
+# ---------------------------------------------------------------------------------------------------------
+# Exercise 7 - get thesales number evolution
+# ---------------------------------------------------------------------------------------------------------
+
+# Title
+st.markdown("""---""")
+st.header('Q7 - Departments with a high sales number increase between the first and the second semester 💸')
 
 # Answer the question
 df_7 = execute_sf_query_table("select dept_code, date_part(quarter,transaction_date::date) as t_quarter, sum(count(*)) over (partition by dept_code, t_quarter) as sales_count from sales group by dept_code, t_quarter")
@@ -238,12 +255,14 @@ df_7['EVOL (%)'] = df_7['EVOL (%)'].astype(int)
 
 st.dataframe(df_7[df_7['EVOL (%)']>20].sort_values('EVOL (%)', ascending=False))
 
-# ------------------------
-# Eighth exercise, get the average price difference between appartments with 2 rooms and the ones with 3 rooms
-# ------------------------
 
-# Exercise title
-st.header('Eighth query: Average price difference between appartments with 🥈 rooms and the ones with 🥉 rooms')
+# ---------------------------------------------------------------------------------------------------------
+# Exercise 8 - get the average price difference between appartments with 2 rooms and the ones with 3 rooms
+# ---------------------------------------------------------------------------------------------------------
+
+# Title
+st.markdown("""---""")
+st.header('Q8 - Average price difference between appartments with 🥈 rooms and the ones with 🥉 rooms')
 
 # Answer the question
 two_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value/carrez_surface) as avg_sqm_price from sales where room_number=2").values[0][0]
@@ -255,12 +274,13 @@ col1.metric("2-rooms 🥈 avg sqm price", str(int(two_rooms_avg_sqm_price))+ " �
 col2.metric("3-rooms 🥉 avg sqm price", str(int(three_rooms_avg_sqm_price))+ " €", str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2))+ " %")
 
 
-# ------------------------
-# Ninth exercise, get the average price of the higher-priced cities in a multi-selection of departments
-# ------------------------
+# ---------------------------------------------------------------------------------------------------------
+# Exercise 9 - get the average price of the higher-priced cities in a multi-selection of departments
+# ---------------------------------------------------------------------------------------------------------
 
-# Exercise title
-st.header('Ninth query: Average price of the 10 higher-priced cities in a multi-selection of departments ✨')
+# Title
+st.markdown("""---""")
+st.header('Q9 - Average price of the 10 higher-priced cities in a multi-selection of departments ✨')
 
 # Query the list of departments
 dept_list = execute_sf_query_table("select distinct dept_code from sales")['DEPT_CODE'].to_list()
@@ -269,8 +289,16 @@ selected_dept_list = st.multiselect("Please select the departments you want to s
 # Answer the question
 st.dataframe(execute_sf_query_table("select city_name, dept_code, round(avg(transaction_value)) as avg_price from sales where dept_code in  ("+str(selected_dept_list).replace('[','').replace(']','')+') group by city_name, dept_code order by avg_price desc limit 10'))
 
+
+# ---------------------------------------------------------------------------------------------------------
+
+st.markdown("""---""")
+
 # Don't run anything past here while troubleshooting
 st.stop()
+
+
+# ---------------------------------------------------------------------------------------------------------
 
 #https://poux-be-ds-chal-2-app-streamlit-app-w30f4m.streamlitapp.com/
 
