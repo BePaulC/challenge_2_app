@@ -237,7 +237,7 @@ st.table(execute_sf_query_table("select transaction_value, street_number, street
 
 # Title
 st.markdown("""---""")
-st.header('Q6 - Evolution of sales from 1st to 2nd quarter of 2020 📈')
+st.header('Q6 - Evolution of sales from Q1 to Q2 📈')
 
 # Exercise Answer
 first_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-01-01' and transaction_date<'2020-03-31')").values[0][0]
