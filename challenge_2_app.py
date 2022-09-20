@@ -128,10 +128,8 @@ my_query_results_2 = execute_sf_query_table("""
     
     where local_type = 'Appartement'
     group by room_number
-    order by room_number;
+    order by room_number
     """)
-
-st.table(my_query_results_2)
 
 # Exercise Answer
 fig2 = px.pie(
