@@ -25,10 +25,6 @@ def execute_sf_query_table(query):
 
     with my_cnx.cursor() as my_cur:
 
-        my_cur.execute("SELECT CURRENT_USER(), CURRENT_ROLE(), CURRENT_ACCOUNT(), CURRENT_REGION(), CURRENT_DATABASE(), CURRENT_SCHEMA()")
-        my_data_row = my_cur.fetchone()
-        st.text(my_data_row)
-
         # Execute the query
         my_cur.execute(query)
 
@@ -68,7 +64,7 @@ st.text('Here is a snapshot of the data provided for this exercise.')
 # Query snowflake
 # Add a button to query the fruit list
 if st.button("Display the initial data"):
-    st.dataframe(get_table("sales", 20))
+    st.table(get_table("sales", 10))
 
 # ------------------------
 # Frist exercise, query the data to count the number of appartments sold between two dates
