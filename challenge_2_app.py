@@ -228,7 +228,24 @@ st.markdown("""---""")
 st.header('Q5 - Top 10 most expensive flats 🏢')
 
 # Exercise Answer
-st.table(execute_sf_query_table("select transaction_value, street_number, street_type, city_name, dept_code, carrez_surface, room_number from sales where (transaction_value is not null and local_type='Appartement') order by transaction_value desc limit 10"))
+st.table(execute_sf_query_table("""
+    select 
+        dept_code, 
+        dept_info.name as dept_name,
+        city_name,
+        carrez_surface, 
+        room_number,
+        transaction_value as transaction_value_eur
+        
+        from sales 
+        
+    left join dept_info
+    on sales.dept_code = dept_info.insee_code
+        
+    where (transaction_value is not null and local_type = 'Appartement') 
+    order by transaction_value desc 
+    limit 10
+    """))
 
 
 # ---------------------------------------------------------------------------------------------------------
