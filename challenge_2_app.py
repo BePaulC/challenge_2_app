@@ -240,7 +240,7 @@ st.table(execute_sf_query_table("""
         dept_code, 
         dept_info.name as dept_name,
         city_name,
-        round(carrez_surface) as carrez_surface, 
+        carrez_surface, 
         transaction_value as transaction_value_eur
         
         from sales 
