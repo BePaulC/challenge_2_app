@@ -237,7 +237,7 @@ st.table(execute_sf_query_table("select transaction_value, street_number, street
 
 # Title
 st.markdown("""---""")
-st.header('Q6 - Sales number evolution for the second quarter 📈')
+st.header('Q6 - Evolution of sales from 1st to 2nd quarter of 2020 📈')
 
 # Exercise Answer
 first_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-01-01' and transaction_date<'2020-03-31')").values[0][0]
@@ -246,12 +246,12 @@ st.metric("Second semester sales number",second_sem_sales_count, str(int(second_
 
 
 # ---------------------------------------------------------------------------------------------------------
-# Exercise 7 - get thesales number evolution
+# Exercise 7 - get the sales number evolution
 # ---------------------------------------------------------------------------------------------------------
 
 # Title
 st.markdown("""---""")
-st.header('Q7 - Departments with a high sales number increase between the first and the second semester 💸')
+st.header('Q7 - Departments with a high increase in sales between the 1st and 2nd semester 💸')
 
 # Exercise Answer
 df_7 = execute_sf_query_table("select dept_code, date_part(quarter,transaction_date::date) as t_quarter, sum(count(*)) over (partition by dept_code, t_quarter) as sales_count from sales group by dept_code, t_quarter")
