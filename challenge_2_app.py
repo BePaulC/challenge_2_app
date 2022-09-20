@@ -24,6 +24,8 @@ def execute_sf_query_table(query):
     my_cnx = snowflake.connector.connect(**st.secrets["snowflake"])
 
     with my_cnx.cursor() as my_cur:
+        my_cur.execute("USE ROLE <SYSADMIN>")
+
         # Execute the query
         my_cur.execute(query)
 
@@ -39,22 +41,21 @@ def execute_sf_query_table(query):
     # Return the query in a dataframe
     return(pd.DataFrame(rows, columns = header))
 
-# Get a table in snowflake based on its name only
+# Get a table in snowflake based on its name
 def get_table(table_name, limit):
     if type(limit) == int:
-        return(execute_sf_query_table("select * from "+table_name+" limit "+str(limit)))
+        return(execute_sf_query_table("select * from " + table_name + " limit "+ str(limit)))
     else:
-        return(execute_sf_query_table("select * from "+table_name+""))
+        return(execute_sf_query_table("select * from " + table_name + ""))
 
-# Add a row into Snowflake - Not used
-def insert_row_snowflake(new_fruit):
-    with my_cnx.cursor() as my_cur:
-        my_cur.execute("insert into fruit_load_list values ('"+new_fruit+"')")
-        return('Thanks for adding ' + add_my_fruit)
+
+# ------------------------------------------------------------------------------------------------
+
 
 # ------------------------
 # ----- Main display -----
 # ------------------------
+
 st.title("🎅 D&A Challenge - 2 🎅")
 
 # Display the data received in a dataframe
@@ -63,7 +64,7 @@ st.text('Here is a snapshot of the data provided for this exercise.')
 
 # Query snowflake
 # Add a button to query the fruit list
-if st.button("Display the intial data"):
+if st.button("Display the initial data"):
     st.dataframe(get_table("sales", 20))
 
 # ------------------------
