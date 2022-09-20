@@ -104,7 +104,7 @@ my_query_results = execute_sf_query_table("""
 
 # Exercise Answer
 st.text('')
-st.write('**' + str(sum((my_query_results[my_query_results['LOCAL_TYPE']=='Appartement']['DAILY_SALES_COUNT'].to_list()))) + '**' + ' appartments have been sold during this period of time')
+st.write('**' + str(sum((my_query_results[my_query_results['LOCAL_TYPE']=='Appartement']['DAILY_SALES_COUNT'].to_list()))) + '**' + ' flats were sold during this time period')
 
 # Plot Chart
 fig = px.bar(
@@ -157,7 +157,7 @@ st.plotly_chart(fig2)
 
 # Title
 st.markdown("""---""")
-st.header('Q3 - Mean quare meter price by department 💵')
+st.header('Q3 - Mean m2 price by department 💵')
 
 # Snowflake Query 
 my_query_results_3 = execute_sf_query_table("""
