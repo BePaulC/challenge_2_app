@@ -337,7 +337,8 @@ col1, col2 = st.columns(2)
 col1.metric("2-rooms 🥈 avg sqm price", str(int(two_rooms_avg_sqm_price))+ " €")
 col2.metric(
     "3-rooms 🥉 avg sqm price", 
-    str(int(three_rooms_avg_sqm_price))+ " €" + ' (' + str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2)) + " %)"
+    str(int(three_rooms_avg_sqm_price))+ " €", 
+    str(int(three_rooms_avg_sqm_price - two_rooms_avg_sqm_price)) + ' (' + str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2)) + " %)"
     )
 
 
