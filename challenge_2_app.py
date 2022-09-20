@@ -258,12 +258,11 @@ st.header('Q6 - Evolution of sales from Q1 to Q2 📈')
 # Exercise Answer
 first_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-01-01' and transaction_date<'2020-03-31')").values[0][0]
 second_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-04-01' and transaction_date<='2020-07-31')").values[0][0]
-st.metric("2nd Semester # sales",second_sem_sales_count, str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)")
 
 # # Display the different average prices with metrics
 col_1, col_2 = st.columns(2)
-col_1.metric("1st Semester # sales", str(int(first_sem_sales_count))+ " €")
-col_2.metric("2nd Semester # sales", second_sem_sales_count, str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)")
+col_1.metric("1st semester # sales", str(int(first_sem_sales_count)))
+col_2.metric("2nd semester # sales", second_sem_sales_count, str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)")
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -278,14 +277,16 @@ st.header('Q7 - Departments with a high increase in sales between the 1st and 2n
 df_7 = execute_sf_query_table("""
     select 
         dept_code, 
+        dept_info.name as dept_name,
         date_part(quarter,transaction_date::date) as t_quarter, 
         sum(count(*)) over (partition by dept_code, t_quarter) as sales_count 
         
         from sales 
 
-
+    left join dept_info
+    on sales.dept_code = dept_info.insee_code
     
-    group by dept_code, t_quarter
+    group by dept_code, dept_name, t_quarter
     """)
 
 # Split the df per semester
