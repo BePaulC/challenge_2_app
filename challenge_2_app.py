@@ -72,6 +72,7 @@ if st.button("Display the initial data"):
 # ------------------------
 
 # Exercise title
+st.markdown("""---""")
 st.header('Q1 - Housing sales between two dates 📆')
 
 col_1, col_2 = st.columns(2)
@@ -92,19 +93,22 @@ d2 = col_2.date_input(
 my_query_results = execute_sf_query_table("select transaction_date, local_type, sum(count(*)) over (partition by transaction_date, local_type) as daily_sales_count from sales where (transaction_date <= '"+d2.strftime('%Y-%m-%d')+"' and transaction_date >= '"+d1.strftime('%Y-%m-%d')+"') group by transaction_date, local_type order by transaction_date asc")
 
 # Answer the exercise question
-st.subheader(str(sum((my_query_results[my_query_results['LOCAL_TYPE']=='Appartement']['DAILY_SALES_COUNT'].to_list())))+' appartments have been sold during this period of time')
+st.write('**' + str(sum((my_query_results[my_query_results['LOCAL_TYPE']=='Appartement']['DAILY_SALES_COUNT'].to_list()))) + '**' + ' appartments have been sold during this period of time')
 
 # Dataframe formatting to have a beautiful chart
-fig = px.bar(my_query_results, x="TRANSACTION_DATE", y="DAILY_SALES_COUNT", color="LOCAL_TYPE", title="Daily sales from " + d1.strftime('%Y-%m-%d') + " to " + d2.strftime('%Y-%m-%d') + " by housing type")
+fig = px.bar(my_query_results, x="TRANSACTION_DATE", y="DAILY_SALES_COUNT", color="LOCAL_TYPE", title="Daily housing sales from " + d1.strftime('%Y-%m-%d') + " to " + d2.strftime('%Y-%m-%d') + " by housing type")
 fig.show()
 
 st.plotly_chart(fig)
 
 
 # ------------------------
-# Second exercise, get the ratio of sales per room number
+# Exercise 2 - get the ratio of sales per room number
 # ------------------------
+
+
 # Exercise title
+st.markdown("""---""")
 st.header('Q2 - Housing sales per room number #️⃣')
 
 # Query snowflake
