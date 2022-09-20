@@ -1,6 +1,9 @@
 # App file
 
-# ----- Imports -----
+# ------------------------
+# ------ Imports -------
+# ------------------------
+
 import os
 import datetime
 import snowflake.connector
@@ -10,15 +13,14 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
+
 # ------------------------
-# ------ Main code -------
+# ------ Functions -------
 # ------------------------
 
-# Variables
-PATH = os.getcwd()
 
-# Functions
 # Fetch Snowflake data
+
 def execute_sf_query_table(query):
     # Connect to Snowflake
     my_cnx = snowflake.connector.connect(**st.secrets["snowflake"])
@@ -40,7 +42,9 @@ def execute_sf_query_table(query):
     # Return the query in a dataframe
     return(pd.DataFrame(rows, columns = header))
 
+
 # Get a table in snowflake based on its name
+
 def get_table(table_name, limit):
     if type(limit) == int:
         return(execute_sf_query_table("select * from " + table_name + " limit "+ str(limit)))
@@ -48,33 +52,30 @@ def get_table(table_name, limit):
         return(execute_sf_query_table("select * from " + table_name + ""))
 
 
-# ------------------------------------------------------------------------------------------------
-
-
-# ------------------------
-# ----- Main display -----
-# ------------------------
+# ---------------------------------------------------------------------------------------------------------
+#  Main display 
+# ---------------------------------------------------------------------------------------------------------
 
 st.title("🎅 D&A Challenge - 2 🎅")
 
-# Display the data received in a dataframe
+# Display Dataset
 st.header('Data received')
 st.text('Here is a snapshot of the data provided for this exercise.')
 
-# Query snowflake
-# Add a button to query the fruit list
-if st.button("Display the initial data"):
+# Snowflake Query 
+if st.button("Display the sales dataset"):
     st.table(get_table("sales", 5))
 
 
-# ------------------------
+# ---------------------------------------------------------------------------------------------------------
 # Exercise 1 - query the data to count the number of appartments sold between two dates
-# ------------------------
+# ---------------------------------------------------------------------------------------------------------
 
-# Exercise title
+# Title
 st.markdown("""---""")
 st.header('Q1 - Housing sales between two dates 📆')
 
+# User Input
 col_1, col_2 = st.columns(2)
 
 # Select the first date
@@ -89,44 +90,67 @@ d2 = col_2.date_input(
      datetime.date(2020, 3, 31)
      )
 
-# Query snowflake
+# Snowflake Query 
 my_query_results = execute_sf_query_table("select transaction_date, local_type, sum(count(*)) over (partition by transaction_date, local_type) as daily_sales_count from sales where (transaction_date <= '"+d2.strftime('%Y-%m-%d')+"' and transaction_date >= '"+d1.strftime('%Y-%m-%d')+"') group by transaction_date, local_type order by transaction_date asc")
 
-# Answer the exercise question
+# Exercise Answer
+st.text('')
 st.write('**' + str(sum((my_query_results[my_query_results['LOCAL_TYPE']=='Appartement']['DAILY_SALES_COUNT'].to_list()))) + '**' + ' appartments have been sold during this period of time')
 
-# Dataframe formatting to have a beautiful chart
-fig = px.bar(my_query_results, x="TRANSACTION_DATE", y="DAILY_SALES_COUNT", color="LOCAL_TYPE", title="Daily housing sales from " + d1.strftime('%Y-%m-%d') + " to " + d2.strftime('%Y-%m-%d') + " by housing type")
+# Plot Chart
+fig = px.bar(
+    my_query_results, 
+    x = "TRANSACTION_DATE", 
+    y = "DAILY_SALES_COUNT", 
+    color = "LOCAL_TYPE", 
+    title = "Daily housing sales from " + d1.strftime('%Y-%m-%d') + " to " + d2.strftime('%Y-%m-%d') + " by housing type"
+    )
 fig.show()
-
 st.plotly_chart(fig)
 
 
-# ------------------------
+# ---------------------------------------------------------------------------------------------------------
 # Exercise 2 - get the ratio of sales per room number
-# ------------------------
+# ---------------------------------------------------------------------------------------------------------
 
-
-# Exercise title
+# Title
 st.markdown("""---""")
-st.header('Q2 - Housing sales per room number #️⃣')
+st.header('Q2 - Flat sales per room number #️⃣')
 
-# Query snowflake
-my_query_results_2 = execute_sf_query_table("select room_number, sum(count(*)) over (partition by room_number) as sales_count from sales where local_type='Appartement' group by room_number order by room_number asc")
+# Snowflake Query 
+my_query_results_2 = execute_sf_query_table("""
+    select 
+        room_number,
+        round(avg(carrez_surface)) as avg_surface,
+        count(*) as total_sales,
+        round(total_sales * 100.0 / (select count(*) from sales), 2) as share_sales
+        
+        from sales
+    
+    where local_type = 'Appartement'
+    group by room_number
+    order by room_number;
+    """)
 
-# Answer the exercise question
-fig2 = px.pie(my_query_results_2, values='SALES_COUNT', names='room_number', title='Appartment sales per room number')
+# Exercise Answer
+fig2 = px.pie(
+    my_query_results_2, 
+    values = 'total_sales', 
+    names = 'room_number', 
+    title = 'Flat sales by room number'
+    )
 fig2.show()
 st.plotly_chart(fig2)
 
 
-# ------------------------
-# Third exercise, get the top x higher-priced regions
-# ------------------------
+# ---------------------------------------------------------------------------------------------------------
+# Exercise 3 - get the top x higher-priced regions
+# ---------------------------------------------------------------------------------------------------------
 
-# Exercise title
+# Title
 st.header('Thrid query: Average squarred meter price per department 💵')
-# Snowflake query
+
+# Snowflake Query 
 my_query_results_3 = execute_sf_query_table("select dept_code, avg(transaction_value/carrez_surface) as avg_sqm_price from sales group by dept_code order by avg_sqm_price desc")
 
 # Data formating
@@ -136,15 +160,16 @@ st.text('This will display a top of the higher priced departments. Please select
 default = my_query_results_3 if len(my_query_results_3) <= 10 else 10
 top = st.slider('How many departments do you want to see?', 0, len(my_query_results_3), default)
 
-#answer the exercise question
+# Exercise Answer
 #st.dataframe(my_query_results_3[:top].set_index('DEPT_CODE'))
 fig3 = px.bar(my_query_results_3[:top], x="DEPT_CODE", y="AVG_SQM_PRICE", title="Average squarred meter price per department")
 fig3.show()
 st.plotly_chart(fig3)
 
-# ------------------------
-# Fourth exercise, get the average squarred meter price per region
-# ------------------------
+
+# ---------------------------------------------------------------------------------------------------------
+# Exercise 4 - get the average square meter price per region
+# ---------------------------------------------------------------------------------------------------------
 
 # Exercise title
 st.header('Fourth query: Average squarred meter price per region 🏡/🏢')
