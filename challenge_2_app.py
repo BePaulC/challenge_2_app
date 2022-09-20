@@ -227,7 +227,7 @@ st.markdown("""---""")
 st.header('Q5 - Top 10 most expensive flats 🏢')
 
 # Exercise Answer
-st.dataframe(execute_sf_query_table("select transaction_value, street_number, street_type, city_name, dept_code, carrez_surface, room_number from sales where (transaction_value is not null and local_type='Appartement') order by transaction_value desc limit 10"))
+st.table(execute_sf_query_table("select transaction_value, street_number, street_type, city_name, dept_code, carrez_surface, room_number from sales where (transaction_value is not null and local_type='Appartement') order by transaction_value desc limit 10"))
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -273,7 +273,7 @@ df_7['SALES_COUNT_Q2'] = df_7['SALES_COUNT_Q2'].astype(int)
 df_7['EVOL (%)'] = 100*round((df_7['SALES_COUNT_Q2']-df_7['SALES_COUNT_Q1'])/ df_7['SALES_COUNT_Q1'],4)
 df_7['EVOL (%)'] = df_7['EVOL (%)'].astype(int)
 
-st.dataframe(df_7[df_7['EVOL (%)']>20].sort_values('EVOL (%)', ascending=False))
+st.table(df_7[df_7['EVOL (%)']>20].sort_values('EVOL (%)', ascending=False))
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -307,7 +307,7 @@ dept_list = execute_sf_query_table("select distinct dept_code from sales")['DEPT
 selected_dept_list = st.multiselect("Please select the departments you want to study", dept_list, default=['06', '13', '33', '59', '69'])
 
 # Exercise Answer
-st.dataframe(execute_sf_query_table("select city_name, dept_code, round(avg(transaction_value)) as avg_price from sales where dept_code in  ("+str(selected_dept_list).replace('[','').replace(']','')+') group by city_name, dept_code order by avg_price desc limit 10'))
+st.table(execute_sf_query_table("select city_name, dept_code, round(avg(transaction_value)) as avg_price from sales where dept_code in  ("+str(selected_dept_list).replace('[','').replace(']','')+') group by city_name, dept_code order by avg_price desc limit 10'))
 
 
 # ---------------------------------------------------------------------------------------------------------
