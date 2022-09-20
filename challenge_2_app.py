@@ -194,11 +194,11 @@ st.markdown("""---""")
 st.header('Q4 - Average m2 price by region 🏡/🏢')
 
 # Dept code input
-region_list = execute_sf_query_table("select distinct new_region from region_info")['NEW_REGION'].to_list()
+region_list = execute_sf_query_table("select distinct new_region from dept_info")['NEW_REGION'].to_list()
 selected_region = st.selectbox("Please select the region you want to study", region_list)
 
 # Snowflake Query
-dept_list = execute_sf_query_table("select insee_code from region_info where new_region ='" + str(selected_region).replace("'","''") + "'")['INSEE_CODE'].to_list()
+dept_list = execute_sf_query_table("select insee_code from dept_info where new_region ='" + str(selected_region).replace("'","''") + "'")['INSEE_CODE'].to_list()
 
 my_query_results_4 = execute_sf_query_table("""
     select 
@@ -336,7 +336,7 @@ st.stop()
 # import folium
 # from streamlit_folium import st_folium
 # Load the department informations
-# df_departement=get_table('region_info', None)
+# df_departement=get_table('dept_info', None)
 
 # Left join to add the department informations
 # my_query_results = my_query_results.merge(df_departement, left_on=['DEPT_CODE'], right_on=['INSEE_CODE'], how='left')
