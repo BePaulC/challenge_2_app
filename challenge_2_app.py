@@ -291,7 +291,7 @@ df_7 = execute_sf_query_table("""
 
 # Split the df per semester
 df_7_q1 = df_7[df_7['T_QUARTER']==1].dropna()
-df_7_q2 = df_7[df_7['T_QUARTER']==2].drop(['DEPT_NAME_y'], axis=1)
+df_7_q2 = df_7[df_7['T_QUARTER']==2].drop(['DEPT_NAME'], axis=1)
 
 # Merge the dict again
 df_7 = df_7_q1.merge(df_7_q2, on='DEPT_CODE', how='left').fillna(0)
