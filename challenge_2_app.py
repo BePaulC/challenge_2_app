@@ -174,7 +174,7 @@ my_query_results_3 = execute_sf_query_table("""
 # Data formating
 my_query_results_3['AVG_SQM_PRICE'] = my_query_results_3['AVG_SQM_PRICE'].apply(ma.ceil)
 
-st.text('This will display a top of the higher priced departments. Please select the number of departments you want to see.')
+st.write('This will display a top of the higher priced departments. Please select the number of departments you want to see.')
 default = my_query_results_3 if len(my_query_results_3) <= 10 else 10
 top = st.slider('How many departments do you want to see?', 0, len(my_query_results_3), default)
 
