@@ -64,32 +64,38 @@ st.text('Here is a snapshot of the data provided for this exercise.')
 # Query snowflake
 # Add a button to query the fruit list
 if st.button("Display the initial data"):
-    st.table(get_table("sales", 10))
+    st.table(get_table("sales", 5))
+
 
 # ------------------------
-# Frist exercise, query the data to count the number of appartments sold between two dates
+# Exercise 1 - query the data to count the number of appartments sold between two dates
 # ------------------------
+
 # Exercise title
-st.header('Frist query: Appartment sales between two dates 📆')
+st.header('Q1 - Housing sales between two dates 📆')
+
+col_1, col_2 = st.columns(2)
 
 # Select the first date
-d1 = st.date_input(
-     "Study period first day",
-     datetime.date(2020, 1, 1))
+d1 = col_1.date_input(
+     "First day",
+     datetime.date(2020, 1, 1)
+     )
 
 # Select the second date
-d2 = st.date_input(
-     "Study period last day",
-     datetime.date(2020, 3, 31))
+d2 = col_2.date_input(
+     "Last day",
+     datetime.date(2020, 3, 31)
+     )
 
 # Query snowflake
 my_query_results = execute_sf_query_table("select transaction_date, local_type, sum(count(*)) over (partition by transaction_date, local_type) as daily_sales_count from sales where (transaction_date <= '"+d2.strftime('%Y-%m-%d')+"' and transaction_date >= '"+d1.strftime('%Y-%m-%d')+"') group by transaction_date, local_type order by transaction_date asc")
 
 # Answer the exercise question
-st.subheader(''+str(sum((my_query_results[my_query_results['LOCAL_TYPE']=='Appartement']['DAILY_SALES_COUNT'].to_list())))+' appartments have been sold during this period of time')
+st.subheader(str(sum((my_query_results[my_query_results['LOCAL_TYPE']=='Appartement']['DAILY_SALES_COUNT'].to_list())))+' appartments have been sold during this period of time')
 
 # Dataframe formatting to have a beautiful chart
-fig = px.bar(my_query_results, x="TRANSACTION_DATE", y="DAILY_SALES_COUNT", color="LOCAL_TYPE", title="Daily sales from the "+d1.strftime('%Y-%m-%d')+" to the "+d2.strftime('%Y-%m-%d')+" per local type")
+fig = px.bar(my_query_results, x="TRANSACTION_DATE", y="DAILY_SALES_COUNT", color="LOCAL_TYPE", title="Daily sales from " + d1.strftime('%Y-%m-%d') + " to " + d2.strftime('%Y-%m-%d') + " by housing type")
 fig.show()
 
 st.plotly_chart(fig)
@@ -99,7 +105,7 @@ st.plotly_chart(fig)
 # Second exercise, get the ratio of sales per room number
 # ------------------------
 # Exercise title
-st.header('Second query: Appartment sales per room number #️⃣')
+st.header('Q2 - Housing sales per room number #️⃣')
 
 # Query snowflake
 my_query_results_2 = execute_sf_query_table("select room_number, sum(count(*)) over (partition by room_number) as sales_count from sales where local_type='Appartement' group by room_number order by room_number asc")
