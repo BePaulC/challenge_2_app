@@ -124,7 +124,7 @@ st.plotly_chart(fig)
 
 # Title
 st.markdown("""---""")
-st.header('Q2 - Flat sales per room number #️⃣')
+st.header('Q2 - Share of flat sales by room number #️⃣')
 
 # Snowflake Query 
 my_query_results_2 = execute_sf_query_table("""
@@ -145,7 +145,7 @@ fig2 = px.pie(
     my_query_results_2, 
     values = 'TOTAL_SALES', 
     names = 'ROOM_NUMBER', 
-    title = 'Flat sales by room number'
+    title = 'Share of flat sales by room number'
     )
 fig2.show()
 st.plotly_chart(fig2)
