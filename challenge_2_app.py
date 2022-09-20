@@ -212,17 +212,18 @@ my_query_results_4 = execute_sf_query_table("""
     order by avg_sqm_price desc
     """)
 
+house_avg_sqm_price = str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Maison']['AVG_SQM_PRICE'].values[0]))
+flat_avg_sqm_price = str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Appartement']['AVG_SQM_PRICE'].values[0])) 
+
 # Display the different average prices with metrics
 st.text('')
-col1, col2 = st.columns(2)
-col1.metric("House 🏡", str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Maison']['AVG_SQM_PRICE'].values[0])) + " €")
-col2.metric(
+col_1, col_2 = st.columns(2)
+col_1.metric("House 🏡", house_avg_sqm_price + " €")
+col_2.metric(
     "Flat 🏢", 
-    str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Appartement']['AVG_SQM_PRICE'].values[0])) + " €"
+    flat_avg_sqm_price + " €",
+    str(int(flat_avg_sqm_price - house_avg_sqm_price)) + ' (' + str(100*round((flat_avg_sqm_price - house_avg_sqm_price) / house_avg_sqm_price, 2)) + " %)"
     )
-
-    # str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2))+ " %"
-
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -333,9 +334,9 @@ two_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value/c
 three_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value/carrez_surface) as avg_sqm_price from sales where room_number=3").values[0][0]
 
 # Display the different average prices with metrics
-col1, col2 = st.columns(2)
-col1.metric("2-rooms 🥈 avg sqm price", str(int(two_rooms_avg_sqm_price))+ " €")
-col2.metric(
+col_1, col_2 = st.columns(2)
+col_1.metric("2-rooms 🥈 avg sqm price", str(int(two_rooms_avg_sqm_price))+ " €")
+col_2.metric(
     "3-rooms 🥉 avg sqm price", 
     str(int(three_rooms_avg_sqm_price))+ " €", 
     str(int(three_rooms_avg_sqm_price - two_rooms_avg_sqm_price)) + ' (' + str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2)) + " %)"
