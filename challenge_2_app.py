@@ -122,7 +122,7 @@ my_query_results_2 = execute_sf_query_table("""
     select 
         room_number,
         round(avg(carrez_surface)) as avg_surface,
-        count(*) as total_sales,
+        count(*) as total_sales
         
         from sales
     
@@ -130,8 +130,6 @@ my_query_results_2 = execute_sf_query_table("""
     group by room_number
     order by room_number
     """)
-
-st.table(my_query_results_2)
 
 # Exercise Answer
 fig2 = px.pie(
