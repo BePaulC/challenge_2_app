@@ -258,16 +258,12 @@ st.header('Q6 - Evolution of sales from Q1 to Q2 📈')
 # Exercise Answer
 first_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-01-01' and transaction_date<'2020-03-31')").values[0][0]
 second_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-04-01' and transaction_date<='2020-07-31')").values[0][0]
-st.metric("Second semester sales number",second_sem_sales_count, str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)")
-
-# # Exercise Answer
-# two_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value/carrez_surface) as avg_sqm_price from sales where room_number=2").values[0][0]
-# three_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value/carrez_surface) as avg_sqm_price from sales where room_number=3").values[0][0]
+st.metric("2nd Semester # sales",second_sem_sales_count, str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)")
 
 # # Display the different average prices with metrics
-# col1, col2 = st.columns(2)
-# col1.metric("2-rooms 🥈 avg sqm price", str(int(two_rooms_avg_sqm_price))+ " €")
-# col2.metric("3-rooms 🥉 avg sqm price", str(int(three_rooms_avg_sqm_price))+ " €", str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2))+ " %")
+col_1, col_2 = st.columns(2)
+col_1.metric("1st Semester # sales", str(int(first_sem_sales_count))+ " €")
+col_2.metric("2nd Semester # sales", second_sem_sales_count, str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)")
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -282,7 +278,6 @@ st.header('Q7 - Departments with a high increase in sales between the 1st and 2n
 df_7 = execute_sf_query_table("""
     select 
         dept_code, 
-
         date_part(quarter,transaction_date::date) as t_quarter, 
         sum(count(*)) over (partition by dept_code, t_quarter) as sales_count 
         
@@ -290,7 +285,7 @@ df_7 = execute_sf_query_table("""
 
 
     
-    group by dept_code, dept_name, t_quarter
+    group by dept_code, t_quarter
     """)
 
 # Split the df per semester
