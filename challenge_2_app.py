@@ -215,8 +215,14 @@ my_query_results_4 = execute_sf_query_table("""
 # Display the different average prices with metrics
 st.text('')
 col1, col2 = st.columns(2)
-col1.metric("🏡", str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Maison']['AVG_SQM_PRICE'].values[0]))+ " €")
-col2.metric("🏢", str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Appartement']['AVG_SQM_PRICE'].values[0]))+ " €")
+col1.metric("House 🏡", str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Maison']['AVG_SQM_PRICE'].values[0])) + " €")
+col2.metric(
+    "Flat 🏢", 
+    str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Appartement']['AVG_SQM_PRICE'].values[0])) + " €"
+    )
+
+    # str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2))+ " %"
+
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -262,7 +268,11 @@ second_sem_sales_count = execute_sf_query_table("select count(*) from sales wher
 # # Display the different average prices with metrics
 col_1, col_2 = st.columns(2)
 col_1.metric("1st semester # sales", str(int(first_sem_sales_count)))
-col_2.metric("2nd semester # sales", second_sem_sales_count, str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)")
+col_2.metric(
+    "2nd semester # sales", 
+    second_sem_sales_count, 
+    str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)"
+    )
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -325,7 +335,10 @@ three_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value
 # Display the different average prices with metrics
 col1, col2 = st.columns(2)
 col1.metric("2-rooms 🥈 avg sqm price", str(int(two_rooms_avg_sqm_price))+ " €")
-col2.metric("3-rooms 🥉 avg sqm price", str(int(three_rooms_avg_sqm_price))+ " €", str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2))+ " %")
+col2.metric(
+    "3-rooms 🥉 avg sqm price", 
+    str(int(three_rooms_avg_sqm_price))+ " €" + ' (' + str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2)) + " %)"
+    )
 
 
 # ---------------------------------------------------------------------------------------------------------
