@@ -123,7 +123,6 @@ my_query_results_2 = execute_sf_query_table("""
         room_number,
         round(avg(carrez_surface)) as avg_surface,
         count(*) as total_sales,
-        round(total_sales * 100.0 / (select count(*) from sales), 2) as share_sales
         
         from sales
     
@@ -137,8 +136,8 @@ st.table(my_query_results_2)
 # Exercise Answer
 fig2 = px.pie(
     my_query_results_2, 
-    values = 'total_sales', 
-    names = 'room_number', 
+    values = 'TOTAL_SALES', 
+    names = 'ROOM_NUMBER', 
     title = 'Flat sales by room number'
     )
 fig2.show()
