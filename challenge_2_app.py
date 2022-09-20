@@ -233,7 +233,7 @@ st.table(execute_sf_query_table("""
         dept_code, 
         dept_info.name as dept_name,
         city_name,
-        round(carrez_surface, 1), 
+        round(carrez_surface) as carrez_surface, 
         transaction_value as transaction_value_eur
         
         from sales 
@@ -299,7 +299,7 @@ df_7['SALES_COUNT_Q2'] = df_7['SALES_COUNT_Q2'].astype(int)
 df_7['EVOL (%)'] = 100*round((df_7['SALES_COUNT_Q2']-df_7['SALES_COUNT_Q1'])/ df_7['SALES_COUNT_Q1'],4)
 df_7['EVOL (%)'] = df_7['EVOL (%)'].astype(int)
 
-st.table(df_7[df_7['EVOL (%)'] > 10].sort_values('EVOL (%)', ascending = False))
+st.table(df_7.sort_values('EVOL (%)', ascending = False).head(10))
 
 
 # ---------------------------------------------------------------------------------------------------------
