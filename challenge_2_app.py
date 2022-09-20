@@ -24,7 +24,7 @@ def execute_sf_query_table(query):
     my_cnx = snowflake.connector.connect(**st.secrets["snowflake"])
 
     with my_cnx.cursor() as my_cur:
-        my_cur.execute("USE ROLE <SYSADMIN>")
+        my_cur.execute("use role sysadmin")
 
         # Execute the query
         my_cur.execute(query)
