@@ -24,15 +24,8 @@ def execute_sf_query_table(query):
     my_cnx = snowflake.connector.connect(**st.secrets["snowflake"])
 
     with my_cnx.cursor() as my_cur:
-        my_cur.execute("use role sysadmin")
-        my_cur.execute(""" use database "D&A Challenges" """)
-        my_cur.execute(""" use schema "Challenge 2 - IntelImmo" """)
 
         my_cur.execute("SELECT CURRENT_USER(), CURRENT_ROLE(), CURRENT_ACCOUNT(), CURRENT_REGION(), CURRENT_DATABASE(), CURRENT_SCHEMA()")
-        my_data_row = my_cur.fetchone()
-        st.text(my_data_row)
-
-        my_cur.execute("show tables")
         my_data_row = my_cur.fetchone()
         st.text(my_data_row)
 
