@@ -273,10 +273,14 @@ st.header('Q7 - Departments with a high increase in sales between the 1st and 2n
 df_7 = execute_sf_query_table("""
     select 
         dept_code, 
+        dept_info.name as dept_name,
         date_part(quarter,transaction_date::date) as t_quarter, 
         sum(count(*)) over (partition by dept_code, t_quarter) as sales_count 
         
         from sales 
+
+    left join dept_info
+    on sales.dept_code = dept_info.insee_code
     
     group by dept_code, t_quarter
     """)
