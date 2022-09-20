@@ -260,6 +260,15 @@ first_sem_sales_count = execute_sf_query_table("select count(*) from sales where
 second_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-04-01' and transaction_date<='2020-07-31')").values[0][0]
 st.metric("Second semester sales number",second_sem_sales_count, str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)")
 
+# # Exercise Answer
+# two_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value/carrez_surface) as avg_sqm_price from sales where room_number=2").values[0][0]
+# three_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value/carrez_surface) as avg_sqm_price from sales where room_number=3").values[0][0]
+
+# # Display the different average prices with metrics
+# col1, col2 = st.columns(2)
+# col1.metric("2-rooms 🥈 avg sqm price", str(int(two_rooms_avg_sqm_price))+ " €")
+# col2.metric("3-rooms 🥉 avg sqm price", str(int(three_rooms_avg_sqm_price))+ " €", str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2))+ " %")
+
 
 # ---------------------------------------------------------------------------------------------------------
 # Exercise 7 - get the sales number evolution
@@ -282,7 +291,7 @@ df_7 = execute_sf_query_table("""
     left join dept_info
     on sales.dept_code = dept_info.insee_code
     
-    group by dept_code, t_quarter
+    group by dept_code, dept_name, t_quarter
     """)
 
 # Split the df per semester
