@@ -25,7 +25,9 @@ def execute_sf_query_table(query):
 
     with my_cnx.cursor() as my_cur:
         my_cur.execute("use role sysadmin")
-        my_cur.execute("show tables")
+        res = my_cur.execute("show tables")
+
+        st.write(res)
 
         # Execute the query
         my_cur.execute(query)
