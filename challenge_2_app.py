@@ -180,7 +180,7 @@ top = st.slider('How many departments do you want to see?', 0, len(my_query_resu
 
 # Exercise Answer
 #st.dataframe(my_query_results_3[:top].set_index('DEPT_CODE'))
-fig3 = px.bar(my_query_results_3[:top], x="DEPT_CODE", y="AVG_SQM_PRICE", title="Average square meter price by department")
+fig3 = px.bar(my_query_results_3[:top], x="DEPT_CODE", y="AVG_SQM_PRICE", title = "Average square meter price by department")
 fig3.show()
 st.plotly_chart(fig3)
 
@@ -213,6 +213,7 @@ my_query_results_4 = execute_sf_query_table("""
     """)
 
 # Display the different average prices with metrics
+st.text('')
 col1, col2 = st.columns(2)
 col1.metric("🏡", str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Maison']['AVG_SQM_PRICE'].values[0]))+ " €")
 col2.metric("🏢", str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Appartement']['AVG_SQM_PRICE'].values[0]))+ " €")
