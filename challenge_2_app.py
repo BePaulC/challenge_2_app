@@ -26,12 +26,13 @@ def execute_sf_query_table(query):
     with my_cnx.cursor() as my_cur:
         my_cur.execute("use role sysadmin")
 
-        my_cur.execute("SELECT CURRENT_USER(), CURRENT_ROLE(), CURRENT_ACCOUNT(), CURRENT_REGION()")
+        my_cur.execute("SELECT CURRENT_USER(), CURRENT_ROLE(), CURRENT_ACCOUNT(), CURRENT_REGION(), CURRENT_DATABASE(), CURRENT_SCHEMA()")
         my_data_row = my_cur.fetchone()
-        st.text("Hello from Snowflake:")
         st.text(my_data_row)
 
-        st.write(res)
+        my_cur.execute("show tables")
+        my_data_row = my_cur.fetchone()
+        st.text(my_data_row)
 
         # Execute the query
         my_cur.execute(query)
