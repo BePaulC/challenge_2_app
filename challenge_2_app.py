@@ -194,11 +194,11 @@ st.markdown("""---""")
 st.header('Q4 - Average m2 price by region 🏡/🏢')
 
 # Dept code input
-region_list = execute_sf_query_table("select distinct new_region from dept_info")['NEW_REGION'].to_list()
+region_list = execute_sf_query_table("select distinct new_region from region_info")['NEW_REGION'].to_list()
 selected_region = st.selectbox("Please select the region you want to study", region_list)
 
 # Snowflake Query
-dept_list = execute_sf_query_table("select insee_code from dept_info where new_region ='" + str(selected_region).replace("'","''") + "'")['INSEE_CODE'].to_list()
+dept_list = execute_sf_query_table("select insee_code from region_info where new_region ='" + str(selected_region).replace("'","''") + "'")['INSEE_CODE'].to_list()
 
 my_query_results_4 = execute_sf_query_table("""
     select 
@@ -254,14 +254,23 @@ st.markdown("""---""")
 st.header('Q7 - Departments with a high increase in sales between the 1st and 2nd semester 💸')
 
 # Exercise Answer
-df_7 = execute_sf_query_table("select dept_code, date_part(quarter,transaction_date::date) as t_quarter, sum(count(*)) over (partition by dept_code, t_quarter) as sales_count from sales group by dept_code, t_quarter")
+df_7 = execute_sf_query_table("""
+    select 
+        dept_code, 
+        date_part(quarter,transaction_date::date) as t_quarter, 
+        sum(count(*)) over (partition by dept_code, t_quarter) as sales_count 
+        
+        from sales 
+    
+    group by dept_code, t_quarter
+    """)
 
 # Split the df per semester
-df_7_1 = df_7[df_7['T_QUARTER']==1].dropna()
-df_7_2 = df_7[df_7['T_QUARTER']==2]
+df_7_q1 = df_7[df_7['T_QUARTER']==1].dropna()
+df_7_q2 = df_7[df_7['T_QUARTER']==2]
 
 # Merge the dict again
-df_7 = df_7_1.merge(df_7_2, on='DEPT_CODE', how='left').fillna(0)
+df_7 = df_7_q1.merge(df_7_q2, on='DEPT_CODE', how='left').fillna(0)
 
 # Rename columns & drop quarters
 df_7 = df_7.rename({'SALES_COUNT_x':'SALES_COUNT_Q1', 'SALES_COUNT_y': 'SALES_COUNT_Q2'}, axis=1)
@@ -274,7 +283,7 @@ df_7['SALES_COUNT_Q2'] = df_7['SALES_COUNT_Q2'].astype(int)
 df_7['EVOL (%)'] = 100*round((df_7['SALES_COUNT_Q2']-df_7['SALES_COUNT_Q1'])/ df_7['SALES_COUNT_Q1'],4)
 df_7['EVOL (%)'] = df_7['EVOL (%)'].astype(int)
 
-st.table(df_7[df_7['EVOL (%)']>20].sort_values('EVOL (%)', ascending=False))
+st.table(df_7[df_7['EVOL (%)'] > 10].sort_values('EVOL (%)', ascending = False))
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -327,7 +336,7 @@ st.stop()
 # import folium
 # from streamlit_folium import st_folium
 # Load the department informations
-# df_departement=get_table('dept_info', None)
+# df_departement=get_table('region_info', None)
 
 # Left join to add the department informations
 # my_query_results = my_query_results.merge(df_departement, left_on=['DEPT_CODE'], right_on=['INSEE_CODE'], how='left')
