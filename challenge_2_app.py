@@ -157,10 +157,19 @@ st.plotly_chart(fig2)
 
 # Title
 st.markdown("""---""")
-st.header('Q3 - Average squarred meter price per department 💵')
+st.header('Q3 - Mean quare meter price by department 💵')
 
 # Snowflake Query 
-my_query_results_3 = execute_sf_query_table("select dept_code, avg(transaction_value/carrez_surface) as avg_sqm_price from sales group by dept_code order by avg_sqm_price desc")
+my_query_results_3 = execute_sf_query_table("""
+    select 
+        dept_code,
+        avg(transaction_value/carrez_surface) as avg_sqm_price 
+        
+        from sales 
+        
+    group by dept_code 
+    order by avg_sqm_price desc
+    """)
 
 # Data formating
 my_query_results_3['AVG_SQM_PRICE'] = my_query_results_3['AVG_SQM_PRICE'].apply(ma.ceil)
@@ -171,26 +180,37 @@ top = st.slider('How many departments do you want to see?', 0, len(my_query_resu
 
 # Exercise Answer
 #st.dataframe(my_query_results_3[:top].set_index('DEPT_CODE'))
-fig3 = px.bar(my_query_results_3[:top], x="DEPT_CODE", y="AVG_SQM_PRICE", title="Average squarred meter price per department")
+fig3 = px.bar(my_query_results_3[:top], x="DEPT_CODE", y="AVG_SQM_PRICE", title="Average square meter price by department")
 fig3.show()
 st.plotly_chart(fig3)
 
 
 # ---------------------------------------------------------------------------------------------------------
-# Exercise 4 - get the average square meter price per region
+# Exercise 4 - get the average square meter price by region
 # ---------------------------------------------------------------------------------------------------------
 
 # Title
 st.markdown("""---""")
-st.header('Q4 - Average squarred meter price per region 🏡/🏢')
+st.header('Q4 - Mean square meter price by region 🏡/🏢')
 
 # Dept code input
 region_list = execute_sf_query_table("select distinct new_region from dept_info")['NEW_REGION'].to_list()
 selected_region = st.selectbox("Please select the region you want to study", region_list)
 
-# Snowflake query
-dept_list = execute_sf_query_table("select insee_code from dept_info where new_region ='"+str(selected_region).replace("'","''")+"'")['INSEE_CODE'].to_list()
-my_query_results_4 = execute_sf_query_table("select local_type, avg(transaction_value/carrez_surface) as avg_sqm_price from sales where dept_code in ("+str(dept_list).replace('[','').replace(']','')+") group by local_type order by avg_sqm_price desc")
+# Snowflake Query
+dept_list = execute_sf_query_table("select insee_code from dept_info where new_region ='" + str(selected_region).replace("'","''") + "'")['INSEE_CODE'].to_list()
+
+my_query_results_4 = execute_sf_query_table("""
+    select 
+        local_type, 
+        avg(transaction_value/carrez_surface) as avg_sqm_price 
+        
+        from sales 
+    
+    where dept_code in (""" + str(dept_list).replace('[','').replace(']','') + """) 
+    group by local_type 
+    order by avg_sqm_price desc
+    """)
 
 # Display the different average prices with metrics
 col1, col2 = st.columns(2)
@@ -206,7 +226,7 @@ col2.metric("🏢", str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=
 st.markdown("""---""")
 st.header('Q5 - Top 10 most expensive flats 🏢')
 
-# Answer the question
+# Exercise Answer
 st.dataframe(execute_sf_query_table("select transaction_value, street_number, street_type, city_name, dept_code, carrez_surface, room_number from sales where (transaction_value is not null and local_type='Appartement') order by transaction_value desc limit 10"))
 
 
@@ -218,7 +238,7 @@ st.dataframe(execute_sf_query_table("select transaction_value, street_number, st
 st.markdown("""---""")
 st.header('Q6 - Sales number evolution for the second quarter 📈')
 
-# Answer the question
+# Exercise Answer
 first_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-01-01' and transaction_date<'2020-03-31')").values[0][0]
 second_sem_sales_count = execute_sf_query_table("select count(*) from sales where (transaction_date>='2020-04-01' and transaction_date<='2020-07-31')").values[0][0]
 st.metric("Second semester sales number",second_sem_sales_count, str(int(second_sem_sales_count - first_sem_sales_count))+ ' ('+str(round((second_sem_sales_count - first_sem_sales_count)*100/first_sem_sales_count, 2))+" %)")
@@ -232,7 +252,7 @@ st.metric("Second semester sales number",second_sem_sales_count, str(int(second_
 st.markdown("""---""")
 st.header('Q7 - Departments with a high sales number increase between the first and the second semester 💸')
 
-# Answer the question
+# Exercise Answer
 df_7 = execute_sf_query_table("select dept_code, date_part(quarter,transaction_date::date) as t_quarter, sum(count(*)) over (partition by dept_code, t_quarter) as sales_count from sales group by dept_code, t_quarter")
 
 # Split the df per semester
@@ -242,14 +262,14 @@ df_7_2 = df_7[df_7['T_QUARTER']==2]
 # Merge the dict again
 df_7 = df_7_1.merge(df_7_2, on='DEPT_CODE', how='left').fillna(0)
 
-# Rename the columns and drop the quarters
+# Rename columns & drop quarters
 df_7 = df_7.rename({'SALES_COUNT_x':'SALES_COUNT_Q1', 'SALES_COUNT_y': 'SALES_COUNT_Q2'}, axis=1)
 df_7 = df_7.drop(['T_QUARTER_x', 'T_QUARTER_y'], axis=1)
 
-# Change the nulmber format
+# Change number format
 df_7['SALES_COUNT_Q2'] = df_7['SALES_COUNT_Q2'].astype(int)
 
-# Add the evolution column
+# Add evolution column
 df_7['EVOL (%)'] = 100*round((df_7['SALES_COUNT_Q2']-df_7['SALES_COUNT_Q1'])/ df_7['SALES_COUNT_Q1'],4)
 df_7['EVOL (%)'] = df_7['EVOL (%)'].astype(int)
 
@@ -264,7 +284,7 @@ st.dataframe(df_7[df_7['EVOL (%)']>20].sort_values('EVOL (%)', ascending=False))
 st.markdown("""---""")
 st.header('Q8 - Average price difference between appartments with 🥈 rooms and the ones with 🥉 rooms')
 
-# Answer the question
+# Exercise Answer
 two_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value/carrez_surface) as avg_sqm_price from sales where room_number=2").values[0][0]
 three_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value/carrez_surface) as avg_sqm_price from sales where room_number=3").values[0][0]
 
@@ -286,7 +306,7 @@ st.header('Q9 - Average price of the 10 higher-priced cities in a multi-selectio
 dept_list = execute_sf_query_table("select distinct dept_code from sales")['DEPT_CODE'].to_list()
 selected_dept_list = st.multiselect("Please select the departments you want to study", dept_list, default=['06', '13', '33', '59', '69'])
 
-# Answer the question
+# Exercise Answer
 st.dataframe(execute_sf_query_table("select city_name, dept_code, round(avg(transaction_value)) as avg_price from sales where dept_code in  ("+str(selected_dept_list).replace('[','').replace(']','')+') group by city_name, dept_code order by avg_price desc limit 10'))
 
 
