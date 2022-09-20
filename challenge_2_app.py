@@ -212,17 +212,17 @@ my_query_results_4 = execute_sf_query_table("""
     order by avg_sqm_price desc
     """)
 
-house_avg_sqm_price = str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Maison']['AVG_SQM_PRICE'].values[0]))
-flat_avg_sqm_price = str(int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Appartement']['AVG_SQM_PRICE'].values[0])) 
+house_avg_sqm_price = int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Maison']['AVG_SQM_PRICE'].values[0])
+flat_avg_sqm_price = int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Appartement']['AVG_SQM_PRICE'].values[0])
 
 # Display the different average prices with metrics
 st.text('')
 col_1, col_2 = st.columns(2)
-col_1.metric("House 🏡", house_avg_sqm_price + " €")
+col_1.metric("House 🏡", str(house_avg_sqm_price) + " €")
 col_2.metric(
     "Flat 🏢", 
-    flat_avg_sqm_price + " €",
-    str(int(flat_avg_sqm_price - house_avg_sqm_price)) + ' (' + str(100*round((flat_avg_sqm_price - house_avg_sqm_price) / house_avg_sqm_price, 2)) + " %)"
+    str(flat_avg_sqm_price) + " €",
+    str(flat_avg_sqm_price - house_avg_sqm_price) + ' (' + str(100*round((flat_avg_sqm_price - house_avg_sqm_price) / house_avg_sqm_price, 2)) + " %)"
     )
 
 
