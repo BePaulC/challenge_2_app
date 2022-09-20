@@ -157,7 +157,7 @@ st.plotly_chart(fig2)
 
 # Title
 st.markdown("""---""")
-st.header('Q3 - Mean m2 price by department 💵')
+st.header('Q3 - Average m2 price by department 💵')
 
 # Snowflake Query 
 my_query_results_3 = execute_sf_query_table("""
@@ -191,7 +191,7 @@ st.plotly_chart(fig3)
 
 # Title
 st.markdown("""---""")
-st.header('Q4 - Mean square meter price by region 🏡/🏢')
+st.header('Q4 - Average m2 price by region 🏡/🏢')
 
 # Dept code input
 region_list = execute_sf_query_table("select distinct new_region from dept_info")['NEW_REGION'].to_list()
