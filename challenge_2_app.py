@@ -131,6 +131,8 @@ my_query_results_2 = execute_sf_query_table("""
     order by room_number
     """)
 
+st.table(my_query_results_2)
+
 # Exercise Answer
 fig2 = px.pie(
     my_query_results_2, 
