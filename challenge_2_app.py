@@ -316,7 +316,7 @@ st.table(df_7.sort_values('EVOL (%)', ascending = False).head(10))
 
 # Title
 st.markdown("""---""")
-st.header('Q8 - Average price difference between appartments with 🥈 rooms and the ones with 🥉 rooms')
+st.header('Q8 - Average price difference between 🥈 room and 🥉 room flats')
 
 # Exercise Answer
 two_rooms_avg_sqm_price = execute_sf_query_table("select avg(transaction_value/carrez_surface) as avg_sqm_price from sales where room_number=2").values[0][0]
