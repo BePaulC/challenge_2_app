@@ -379,16 +379,20 @@ st.table(execute_sf_query_table("""
 
 # Title
 st.markdown("""---""")
-st.header('Bonus Map 📍')
+st.header('Bonus Map - Top 10 cities with highest average m2 price 📍')
 
 my_query_results_bonus_1 = execute_sf_query_table("""
     select 
+        d.name as dept_name,
         s.city_name,
         c.lat,
         c.lon,
         round(avg(transaction_value/carrez_surface)) as avg_sqm_price_eur
         
         from sales as s
+
+    left join dept_info as d
+    on s.dept_code = d.insee_code
         
     left join city_info as c
     on s.city_name = c.city_name
