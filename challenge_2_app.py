@@ -384,8 +384,10 @@ my_query_results_bonus_1 = execute_sf_query_table("""
     """)
 
 # Display results
-st.table(my_query_results_bonus_1[['CITY_NAME', 'AVG_SQM_PRICE_EUR']])
-st.map(my_query_results_bonus_1[['LAT', 'LON']].rename({'LAT':'lat', 'LON': 'lon'}, axis=1))
+st.table(my_query_results_bonus_1[['CITY_NAME', 'LAT', 'AVG_SQM_PRICE_EUR']])
+
+df_gps = my_query_results_bonus_1[['LAT', 'LON']].rename({'LAT':'lat', 'LON': 'lon'}, axis=1).dropna()
+st.map(df_gps)
 
 
 # ---------------------------------------------------------------------------------------------------------
