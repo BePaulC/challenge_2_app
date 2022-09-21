@@ -385,7 +385,7 @@ min_housing_surface = st.slider(
     label = 'Min housing surface in m2', 
     min_value = 0, 
     max_value = 100, 
-    value = 5
+    value = 1
     )
 
 my_query_results_bonus_1 = execute_sf_query_table("""
