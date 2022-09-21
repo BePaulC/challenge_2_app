@@ -355,7 +355,22 @@ dept_list = execute_sf_query_table("select distinct dept_code from sales")['DEPT
 selected_dept_list = st.multiselect("Please select the departments you want to study", dept_list, default=['06', '13', '33', '59', '69'])
 
 # Exercise Answer
-st.table(execute_sf_query_table("select city_name, dept_code, round(avg(transaction_value)) as avg_price from sales where dept_code in  ("+str(selected_dept_list).replace('[','').replace(']','')+') group by city_name, dept_code order by avg_price desc limit 10'))
+st.table(execute_sf_query_table("""
+    select 
+        dept_info.name as dept_name,
+        city_name, 
+        round(avg(transaction_value)) as avg_price 
+        
+        from sales
+
+    left join dept_info
+    on sales.dept_code = dept_info.insee_code
+        
+    where dept_code in  (""" + str(selected_dept_list).replace('[','').replace(']','') + """) 
+    group by dept_name, city_name
+    order by avg_price desc 
+    limit 10
+    """))
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -384,7 +399,7 @@ my_query_results_bonus_1 = execute_sf_query_table("""
     """)
 
 # Display results
-st.table(my_query_results_bonus_1[['CITY_NAME', 'LAT', 'AVG_SQM_PRICE_EUR']])
+st.table(my_query_results_bonus_1[['CITY_NAME', 'AVG_SQM_PRICE_EUR']])
 
 df_gps = my_query_results_bonus_1[['LAT', 'LON']].rename({'LAT':'lat', 'LON': 'lon'}, axis=1).dropna()
 st.map(df_gps)
