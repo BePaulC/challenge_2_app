@@ -400,7 +400,7 @@ my_query_results_bonus_1 = execute_sf_query_table("""
     left join city_info as c
     on s.city_name = c.city_name
 
-    where carrez_surface >= """ min_housing_surface """
+    where carrez_surface >= """ + min_housing_surface + """
     group by dept_name, s.city_name, c.lat, c.lon
     order by avg_sqm_price_eur desc
     limit 10;
