@@ -381,7 +381,12 @@ st.table(execute_sf_query_table("""
 st.markdown("""---""")
 st.header('Bonus Map 📍 - Top 10 cities with highest average m2 price 💸')
 
-min_housing_surface = st.slider('Min housing surface in m2', 0, 100)
+min_housing_surface = st.slider(
+    'Min housing surface in m2', 
+    0, 
+    100, 
+    default = 5
+    )
 
 my_query_results_bonus_1 = execute_sf_query_table("""
     select 
