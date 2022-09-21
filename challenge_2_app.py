@@ -387,7 +387,7 @@ my_query_results_bonus_1 = execute_sf_query_table("""
         s.city_name,
         c.lat,
         c.lon,
-        round(avg(transaction_value/carrez_surface)) as avg_sqm_price_eur
+        avg(transaction_value/carrez_surface) as avg_sqm_price_eur
         
         from sales as s
 
@@ -403,7 +403,9 @@ my_query_results_bonus_1 = execute_sf_query_table("""
     """)
 
 # Display results
-st.table(my_query_results_bonus_1[['DEPT_NAME', 'CITY_NAME', 'AVG_SQM_PRICE_EUR']])
+df_table = my_query_results_bonus_1[['DEPT_NAME', 'CITY_NAME', 'AVG_SQM_PRICE_EUR']]
+df_table.AVG_SQM_PRICE_EUR = df_table.AVG_SQM_PRICE_EUR.round()
+st.table(df_table)
 
 df_gps = my_query_results_bonus_1[['LAT', 'LON']].rename({'LAT':'lat', 'LON': 'lon'}, axis=1).dropna()
 st.map(df_gps)
