@@ -218,9 +218,9 @@ flat_avg_sqm_price = int(my_query_results_4[my_query_results_4['HOUSING_TYPE']==
 # Display the different average prices with metrics
 st.text('')
 col_1, col_2 = st.columns(2)
-col_1.metric("House 🏡", str(house_avg_sqm_price) + " €")
+col_1.metric("House m2 🏡", str(house_avg_sqm_price) + " €")
 col_2.metric(
-    "Flat 🏢", 
+    "Flat m2 🏢", 
     str(flat_avg_sqm_price) + " €",
     str(flat_avg_sqm_price - house_avg_sqm_price) + ' (' + str(100*round((flat_avg_sqm_price - house_avg_sqm_price) / house_avg_sqm_price, 2)) + " %)"
     )
@@ -384,7 +384,13 @@ my_query_results_bonus_1 = execute_sf_query_table("""
     limit 10;
     """)
 
-st.table(my_query_results_bonus_1[['lat', 'lon']])
+st.table(my_query_results_bonus_1)
+
+st.table(my_query_results_bonus_1[['LAT', 'LON']])
+
+# st.table(my_query_results_bonus_1['LAT', 'lon'])
+
+# st.map(my_query_results_bonus_1['lat', 'lon'])
 
 
 # ---------------------------------------------------------------------------------------------------------
