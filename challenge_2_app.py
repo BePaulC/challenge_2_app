@@ -400,7 +400,7 @@ my_query_results_bonus_1 = execute_sf_query_table("""
     left join city_info as c
     on s.city_name = c.city_name
 
-    where carrez_surface >= """ + min_housing_surface + """
+    where carrez_surface >= """ + str(min_housing_surface) + """
     group by dept_name, s.city_name, c.lat, c.lon
     order by avg_sqm_price_eur desc
     limit 10;
@@ -408,7 +408,7 @@ my_query_results_bonus_1 = execute_sf_query_table("""
 
 # Display results
 df_table = my_query_results_bonus_1[['DEPT_NAME', 'CITY_NAME', 'AVG_SQM_PER_TRANSACTION', 'AVG_SQM_PRICE_EUR']]
-df_table.AVG_SQM_PER_TRANSACTION = df_table.AVG_SQM_PER_TRANSACTION.round(1)
+df_table.AVG_SQM_PER_TRANSACTION = df_table.AVG_SQM_PER_TRANSACTION.astype('int')
 df_table.AVG_SQM_PRICE_EUR = df_table.AVG_SQM_PRICE_EUR.astype('int')
 st.table(df_table)
 
