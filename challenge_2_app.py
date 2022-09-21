@@ -406,13 +406,18 @@ my_query_results_bonus_1 = execute_sf_query_table("""
     limit 10;
     """)
 
-# Display results
+
+# Display Table
 df_table = my_query_results_bonus_1[['DEPT_NAME', 'CITY_NAME', 'AVG_SQM_PER_TRANSACTION', 'AVG_SQM_PRICE_EUR']]
 df_table.AVG_SQM_PER_TRANSACTION = df_table.AVG_SQM_PER_TRANSACTION.astype('int')
 df_table.AVG_SQM_PRICE_EUR = df_table.AVG_SQM_PRICE_EUR.astype('int')
+
 st.table(df_table)
 
+
+# Display Map
 df_gps = my_query_results_bonus_1[['LAT', 'LON']].rename({'LAT':'lat', 'LON': 'lon'}, axis=1).dropna()
+
 st.map(df_gps)
 
 
