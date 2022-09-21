@@ -385,7 +385,7 @@ my_query_results_bonus_1 = execute_sf_query_table("""
 
 # Display results
 st.table(my_query_results_bonus_1[['CITY_NAME', 'AVG_SQM_PRICE_EUR']])
-st.map(pd.DataFrame(my_query_results_bonus_1[['LAT', 'LON']]))
+st.map(my_query_results_bonus_1[['LAT', 'LON']].rename({'LAT':'lat', 'LON': 'lon'}, axis=1))
 
 
 # ---------------------------------------------------------------------------------------------------------
