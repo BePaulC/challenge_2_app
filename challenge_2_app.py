@@ -21,7 +21,6 @@ import plotly.express as px
 
 # Fetch Snowflake data
 
-@st.cache
 def execute_sf_query_table(query):
     # Connect to Snowflake
     my_cnx = snowflake.connector.connect(**st.secrets["snowflake"])
@@ -44,7 +43,6 @@ def execute_sf_query_table(query):
 
 # Get a table in Snowflake based on its name
 
-@st.cache
 def get_table(table_name, limit):
     if type(limit) == int:
         return(execute_sf_query_table("select * from " + table_name + " limit " + str(limit)))
