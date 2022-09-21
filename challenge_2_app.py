@@ -92,26 +92,26 @@ d2 = col_2.date_input(
 my_query_results = execute_sf_query_table("""
     select 
         transaction_date, 
-        local_type, 
-        sum(count(*)) over (partition by transaction_date, local_type) as daily_sales_count 
+        housing_type, 
+        sum(count(*)) over (partition by transaction_date, housing_type) as daily_sales_count 
         
         from sales 
         
     where (transaction_date <= '""" + d2.strftime('%Y-%m-%d') + """' and transaction_date >= '""" + d1.strftime('%Y-%m-%d') + """') 
-    group by transaction_date, local_type 
+    group by transaction_date, housing_type 
     order by transaction_date 
     """)
 
 # Exercise Answer
 st.text('')
-st.write('**' + str(sum((my_query_results[my_query_results['LOCAL_TYPE']=='Appartement']['DAILY_SALES_COUNT'].to_list()))) + '**' + ' flats were sold during this time period')
+st.write('**' + str(sum((my_query_results[my_query_results['HOUSING_TYPE']=='Appartement']['DAILY_SALES_COUNT'].to_list()))) + '**' + ' flats were sold during this time period')
 
 # Plot Chart
 fig = px.bar(
     my_query_results, 
     x = "TRANSACTION_DATE", 
     y = "DAILY_SALES_COUNT", 
-    color = "LOCAL_TYPE", 
+    color = "HOUSING_TYPE", 
     title = "Daily housing sales from " + d1.strftime('%Y-%m-%d') + " to " + d2.strftime('%Y-%m-%d') + " by housing type"
     )
 fig.show()
@@ -135,7 +135,7 @@ my_query_results_2 = execute_sf_query_table("""
         
         from sales
     
-    where local_type = 'Appartement'
+    where housing_type = 'Appartement'
     group by room_number
     order by room_number
     """)
@@ -202,18 +202,18 @@ dept_list = execute_sf_query_table("select insee_code from dept_info where new_r
 
 my_query_results_4 = execute_sf_query_table("""
     select 
-        local_type, 
+        housing_type, 
         avg(transaction_value/carrez_surface) as avg_sqm_price 
         
         from sales 
     
     where dept_code in (""" + str(dept_list).replace('[','').replace(']','') + """) 
-    group by local_type 
+    group by housing_type 
     order by avg_sqm_price desc
     """)
 
-house_avg_sqm_price = int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Maison']['AVG_SQM_PRICE'].values[0])
-flat_avg_sqm_price = int(my_query_results_4[my_query_results_4['LOCAL_TYPE']=='Appartement']['AVG_SQM_PRICE'].values[0])
+house_avg_sqm_price = int(my_query_results_4[my_query_results_4['HOUSING_TYPE']=='Maison']['AVG_SQM_PRICE'].values[0])
+flat_avg_sqm_price = int(my_query_results_4[my_query_results_4['HOUSING_TYPE']=='Appartement']['AVG_SQM_PRICE'].values[0])
 
 # Display the different average prices with metrics
 st.text('')
@@ -248,7 +248,7 @@ st.table(execute_sf_query_table("""
     left join dept_info
     on sales.dept_code = dept_info.insee_code
         
-    where (transaction_value is not null and local_type = 'Appartement') 
+    where (transaction_value is not null and housing_type = 'Appartement') 
     order by transaction_value desc 
     limit 10
     """))
@@ -360,46 +360,37 @@ st.table(execute_sf_query_table("select city_name, dept_code, round(avg(transact
 
 
 # ---------------------------------------------------------------------------------------------------------
+# Bonus - map
+# ---------------------------------------------------------------------------------------------------------
+
+# Title
+st.markdown("""---""")
+st.header('Bonus Map 📍')
+
+my_query_results_bonus_1 = execute_sf_query_table("""
+    select 
+        s.city_name,
+        c.lat,
+        c.lon,
+        round(avg(transaction_value/carrez_surface)) as avg_sqm_price_eur
+        
+        from sales as s
+        
+    left join city_info as c
+    on s.city_name = c.city_name
+
+    group by s.city_name, lat, lon
+    order by avg_sqm_price_eur desc
+    limit 10;
+    """)
+
+st.table(my_query_results_bonus_1[['lat', 'lon']])
+
+
+# ---------------------------------------------------------------------------------------------------------
 
 st.markdown("""---""")
 
 # Don't run anything past here while troubleshooting
 st.stop()
 
-
-# ---------------------------------------------------------------------------------------------------------
-
-#https://poux-be-ds-chal-2-app-streamlit-app-w30f4m.streamlitapp.com/
-
-# old code to have a map
-# import folium
-# from streamlit_folium import st_folium
-# Load the department informations
-# df_departement=get_table('dept_info', None)
-
-# Left join to add the department informations
-# my_query_results = my_query_results.merge(df_departement, left_on=['DEPT_CODE'], right_on=['INSEE_CODE'], how='left')
-
-# # Print merged table
-# st.dataframe(my_query_results)
-
-# # Map initialisation
-# map = folium.Map(location=[43.634, 1.433333],zoom_start=6)
-
-# # Transform dataframe into lists
-# lat_list = my_query_results['LAT'].to_list()
-# lon_list = my_query_results['LON'].to_list()
-# name_list = my_query_results['NAME'].to_list()
-# lat_lon_list= []
-# sqm_price_list = my_query_results['AVG_SQM_PRICE'].tolist()
-
-# # For all the departments
-# for i in range(len(lat_list)):
-#     lat_lon_list.append([lat_list[i],lon_list[i]])
-
-# # Add markers
-# for i in range(len(lat_list)):
-#     folium.Marker(lat_lon_list[i],popup='Prix moyen dans le département {} : {}€/m²'.format(name_list[i],sqm_price_list[i])).add_to(map)
-
-# #Print the map on the app
-# st_folium(map, width = 725)
