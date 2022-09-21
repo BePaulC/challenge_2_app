@@ -387,6 +387,7 @@ my_query_results_bonus_1 = execute_sf_query_table("""
         s.city_name,
         c.lat,
         c.lon,
+        avg(carrez_surface) as avg_sqm_per_transaction,
         avg(transaction_value/carrez_surface) as avg_sqm_price_eur
         
         from sales as s
