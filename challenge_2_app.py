@@ -384,13 +384,9 @@ my_query_results_bonus_1 = execute_sf_query_table("""
     limit 10;
     """)
 
-st.table(my_query_results_bonus_1)
-
-st.table(my_query_results_bonus_1[['LAT', 'LON']])
-
-# st.table(my_query_results_bonus_1['LAT', 'lon'])
-
-# st.map(my_query_results_bonus_1['lat', 'lon'])
+# Display results
+st.table(my_query_results_bonus_1[['CITY_NAME', 'AVG_SQM_PRICE_EUR']])
+st.map(my_query_results_bonus_1[['LAT', 'LON']])
 
 
 # ---------------------------------------------------------------------------------------------------------
