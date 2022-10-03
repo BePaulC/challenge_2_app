@@ -56,7 +56,7 @@ def get_table(table_name, limit):
 st.title("🎅 ❄️ & Streamlit Demo ⛄")
 
 # Display Dataset
-st.header('Data received')
+st.header('Dataset of the housing sales in France')
 st.text('Here is a snapshot of the data provided for this exercise.')
 
 # Snowflake Query 
@@ -69,7 +69,7 @@ if st.button("Display the sales dataset"):
 
 # Title
 st.markdown("""---""")
-st.header('Q5 - Top 10 most expensive flats 🏢')
+st.header('Top 10 most expensive flats 🏢')
 
 # Exercise Answer
 st.table(execute_sf_query_table("""
@@ -96,7 +96,7 @@ st.table(execute_sf_query_table("""
 
 # Title
 st.markdown("""---""")
-st.header('Bonus Map 📍 - Top 10 cities with highest average m2 price 💸')
+st.header('Map 📍 - Top 10 cities with highest average m2 price 💸')
 
 min_housing_surface = st.slider(
     label = 'Min housing surface in m2', 
