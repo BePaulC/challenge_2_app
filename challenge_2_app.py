@@ -63,39 +63,32 @@ st.text('Here is a snapshot of the data provided for this exercise.')
 if st.button("Display the sales dataset"):
     st.table(get_table("sales", 5))
 
-
-
-
 # ---------------------------------------------------------------------------------------------------------
-# Exercise 9 - get the average price of the higher-priced cities in a multi-selection of departments
+# Exercise 5 - get the top 10 higher-priced appartments
 # ---------------------------------------------------------------------------------------------------------
 
 # Title
 st.markdown("""---""")
-st.header('Q9 - Average price of the 10 higher-priced cities in a multi-selection of departments ✨')
-
-# Query the list of departments
-dept_list = execute_sf_query_table("select distinct dept_code from sales")['DEPT_CODE'].to_list()
-selected_dept_list = st.multiselect("Please select the departments you want to study", dept_list, default=['06', '13', '33', '59', '69'])
+st.header('Q5 - Top 10 most expensive flats 🏢')
 
 # Exercise Answer
 st.table(execute_sf_query_table("""
     select 
+        dept_code, 
         dept_info.name as dept_name,
-        city_name, 
-        round(avg(transaction_value)) as avg_price 
+        city_name,
+        carrez_surface, 
+        transaction_value as transaction_value_eur
         
-        from sales
-
+        from sales 
+        
     left join dept_info
     on sales.dept_code = dept_info.insee_code
         
-    where dept_code in  (""" + str(selected_dept_list).replace('[','').replace(']','') + """) 
-    group by dept_name, city_name
-    order by avg_price desc 
+    where (transaction_value is not null and housing_type = 'Appartement') 
+    order by transaction_value desc 
     limit 10
     """))
-
 
 # ---------------------------------------------------------------------------------------------------------
 # Bonus - map
@@ -151,11 +144,56 @@ st.map(df_gps)
 
 
 # ---------------------------------------------------------------------------------------------------------
-
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
 st.markdown("""---""")
 
 # Don't run anything past here while troubleshooting
 st.stop()
+
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Exercise 9 - get the average price of the higher-priced cities in a multi-selection of departments
+# ---------------------------------------------------------------------------------------------------------
+
+# Title
+st.markdown("""---""")
+st.header('Q9 - Average price of the 10 higher-priced cities in a multi-selection of departments ✨')
+
+# Query the list of departments
+dept_list = execute_sf_query_table("select distinct dept_code from sales")['DEPT_CODE'].to_list()
+selected_dept_list = st.multiselect("Please select the departments you want to study", dept_list, default=['06', '13', '33', '59', '69'])
+
+# Exercise Answer
+st.table(execute_sf_query_table("""
+    select 
+        dept_info.name as dept_name,
+        city_name, 
+        round(avg(transaction_value)) as avg_price 
+        
+        from sales
+
+    left join dept_info
+    on sales.dept_code = dept_info.insee_code
+        
+    where dept_code in  (""" + str(selected_dept_list).replace('[','').replace(']','') + """) 
+    group by dept_name, city_name
+    order by avg_price desc 
+    limit 10
+    """))
+
 
 
 # ---------------------------------------------------------------------------------------------------------
