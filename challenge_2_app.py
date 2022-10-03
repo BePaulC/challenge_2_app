@@ -153,7 +153,7 @@ st.header('Add your sale ➕ ')
 transaction_date = datetime.datetime.now()
 transaction_value = st.text_input('Please enter a transaction value')
 street_number = st.text_input('Please enter a street number')
-street_type = "2""
+street_type = "2"
 street_name = st.text_input('Please enter a street name')
 zip_code = st.text_input('Please enter a ZIP code')
 city_name = st.text_input('Please enter a city name')
