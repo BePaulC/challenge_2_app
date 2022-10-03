@@ -142,6 +142,31 @@ df_gps = my_query_results_bonus_1[['LAT', 'LON']].rename({'LAT':'lat', 'LON': 'l
 
 st.map(df_gps)
 
+# ---------------------------------------------------------------------------------------------------------
+# Bonus - Add a sale
+# ---------------------------------------------------------------------------------------------------------
+
+# Title
+st.markdown("""---""")
+st.header('Add your sale ➕ ')
+
+transaction_date = datetime.datetime.now()
+transaction_value = st.text_input('Please enter a transaction value')
+street_number = st.text_input('Please enter a street number')
+street_type = "2""
+street_name = st.text_input('Please enter a street name')
+zip_code = st.text_input('Please enter a ZIP code')
+city_name = st.text_input('Please enter a city name')
+dept_code = st.text_input('Please enter a dept code (2 to 3 char)')
+carrez_surface = st.text_input('Please enter the carrez surface (in sqm)')
+actual_surface = st.text_input('Please enter the actual surface (in sqm)')
+room_number = st.text_input('Please enter the number of rooms')
+ 
+
+if st.button('Save and send to SF'):
+    execute_sf_query_table("insert into sales values ('" + transaction_date +"','" + transaction_value +"','" + street_number +"','" + street_type +"','" + street_name +"','" + zip_code +"','" + city_name +"','" + dept_code +"','" + carrez_surface +"','" + actual_surface +"','" + room_number +"')"
+)
+
 
 # ---------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------
@@ -174,7 +199,7 @@ st.header('Q9 - Average price of the 10 higher-priced cities in a multi-selectio
 
 # Query the list of departments
 dept_list = execute_sf_query_table("select distinct dept_code from sales")['DEPT_CODE'].to_list()
-selected_dept_list = st.multiselect("Please select the departments you want to study", dept_list, default=['06', '13', '33', '59', '69'])
+selected_dept_list = st.multiselect("Pleasee select the departments you want to study", dept_list, default=['06', '13', '33', '59', '69'])
 
 # Exercise Answer
 st.table(execute_sf_query_table("""
@@ -305,7 +330,7 @@ my_query_results_3 = execute_sf_query_table("""
 # Data formating
 my_query_results_3['AVG_SQM_PRICE'] = my_query_results_3['AVG_SQM_PRICE'].apply(ma.ceil)
 
-st.write('This will display a top of the higher priced departments. Please select the number of departments you want to see.')
+st.write('This will display a top of the higher priced departments. Pleasee select the number of departments you want to see.')
 default = my_query_results_3 if len(my_query_results_3) <= 10 else 10
 top = st.slider('How many departments do you want to see?', 0, len(my_query_results_3), default)
 
@@ -326,7 +351,7 @@ st.header('Q4 - Average m2 price by region 🏡/🏢')
 
 # Dept code input
 region_list = execute_sf_query_table("select distinct new_region from dept_info")['NEW_REGION'].to_list()
-selected_region = st.selectbox("Please select the region you want to study", region_list)
+selected_region = st.selectbox("Pleasee select the region you want to study", region_list)
 
 # Snowflake Query
 dept_list = execute_sf_query_table("select insee_code from dept_info where new_region ='" + str(selected_region).replace("'","''") + "'")['INSEE_CODE'].to_list()
