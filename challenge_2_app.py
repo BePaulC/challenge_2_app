@@ -53,7 +53,7 @@ def get_table(table_name, limit):
 #  Main display 
 # ---------------------------------------------------------------------------------------------------------
 
-st.title("🎅 D&A Challenge - 2 🎅")
+st.title("🎅 Snowflake + Streamlit Demo ❄⛄")
 
 # Display Dataset
 st.header('Data received')
