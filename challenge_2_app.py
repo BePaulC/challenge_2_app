@@ -151,21 +151,21 @@ st.markdown("""---""")
 st.header('Add your sale ➕ ')
 
 transaction_date = datetime.datetime.now()
-transaction_value = st.text_input('Please enter a transaction value')
-street_number = st.text_input('Please enter a street number')
+transaction_value = st.text_input('Transaction value')
+street_number = st.text_input('Street number')
 street_type = "2"
-street_name = st.text_input('Please enter a street name')
-zip_code = st.text_input('Please enter a ZIP code')
-city_name = st.text_input('Please enter a city name')
-dept_code = st.text_input('Please enter a dept code (2 to 3 char)')
-carrez_surface = st.text_input('Please enter the carrez surface (in sqm)')
-actual_surface = st.text_input('Please enter the actual surface (in sqm)')
-room_number = st.text_input('Please enter the number of rooms')
+street_name = st.text_input('Street name')
+zip_code = st.text_input('ZIP code')
+city_name = st.text_input('City name')
+dept_code = st.text_input('Dept code (2 to 3 char)')
+carrez_surface = st.text_input('Carrez surface (in sqm)')
+housing_type = st.selectbox('Housing type', ('Maison', 'Appartement'))
+actual_surface = st.text_input('Actual surface (in sqm)')
+room_number = st.text_input('Number of rooms')
  
 
 if st.button('Save and send to SF'):
-    execute_sf_query_table("insert into sales values ('" + transaction_date +"','" + transaction_value +"','" + street_number +"','" + street_type +"','" + street_name +"','" + zip_code +"','" + city_name +"','" + dept_code +"','" + carrez_surface +"','" + actual_surface +"','" + room_number +"')"
-)
+    execute_sf_query_table("insert into sales values ('" + transaction_date +"','" + transaction_value +"','" + street_number +"','" + street_type +"','" + street_name +"','" + zip_code +"','" + city_name +"','" + dept_code +"','" + carrez_surface +"','" + housing_type +"','" + actual_surface +"','" + room_number +"')")
 
 
 # ---------------------------------------------------------------------------------------------------------
