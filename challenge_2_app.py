@@ -165,8 +165,8 @@ room_number = st.text_input('Number of rooms')
  
 
 if st.button('Save and send to SF'):
-    function_return = execute_sf_query_table("insert into sales values ('" + transaction_date +"','" + transaction_value +"','" + street_number +"','" + street_type +"','" + street_name +"','" + zip_code +"','" + city_name +"','" + dept_code +"','" + carrez_surface +"','" + housing_type +"','" + actual_surface +"','" + room_number +"')")
-    st.text(function_return)
+    execute_sf_query_table("insert into sales values ('" + transaction_date +"','" + transaction_value +"','" + street_number +"','" + street_type +"','" + street_name +"','" + zip_code +"','" + city_name +"','" + dept_code +"','" + carrez_surface +"','" + housing_type +"','" + actual_surface +"','" + room_number +"')")
+    st.text("Sale added to Snowflake")
 
 # ---------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------
