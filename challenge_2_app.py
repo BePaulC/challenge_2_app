@@ -150,7 +150,7 @@ st.map(df_gps)
 st.markdown("""---""")
 st.header('Add your sale ➕ ')
 
-transaction_date = datetime.datetime.now()
+transaction_date = '2022-10-04T00:00:00Z'
 transaction_value = st.text_input('Transaction value')
 street_number = st.text_input('Street number')
 street_type = "2"
