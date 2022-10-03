@@ -177,7 +177,7 @@ if st.button('Save and send to SF'):
 # ---------------------------------------------------------------------------------------------------------
 st.markdown("""---""")
 
-if st.button('Delete sale made today'):
+if st.button('Delete sales made today'):
     execute_sf_query_table("delete from sales where transaction_date = '2022-10-04T00:00:00Z';")
     st.text("Today's sales deleted from Snowflake")
 
