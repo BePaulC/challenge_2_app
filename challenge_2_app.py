@@ -53,7 +53,7 @@ def get_table(table_name, limit):
 #  Main display 
 # ---------------------------------------------------------------------------------------------------------
 
-st.title("🎅 Snowflake + Streamlit Demo ❄⛄")
+st.title("🎅 ❄️ & Streamlit Demo ⛄")
 
 # Display Dataset
 st.header('Data received')
@@ -62,6 +62,100 @@ st.text('Here is a snapshot of the data provided for this exercise.')
 # Snowflake Query 
 if st.button("Display the sales dataset"):
     st.table(get_table("sales", 5))
+
+
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Exercise 9 - get the average price of the higher-priced cities in a multi-selection of departments
+# ---------------------------------------------------------------------------------------------------------
+
+# Title
+st.markdown("""---""")
+st.header('Q9 - Average price of the 10 higher-priced cities in a multi-selection of departments ✨')
+
+# Query the list of departments
+dept_list = execute_sf_query_table("select distinct dept_code from sales")['DEPT_CODE'].to_list()
+selected_dept_list = st.multiselect("Please select the departments you want to study", dept_list, default=['06', '13', '33', '59', '69'])
+
+# Exercise Answer
+st.table(execute_sf_query_table("""
+    select 
+        dept_info.name as dept_name,
+        city_name, 
+        round(avg(transaction_value)) as avg_price 
+        
+        from sales
+
+    left join dept_info
+    on sales.dept_code = dept_info.insee_code
+        
+    where dept_code in  (""" + str(selected_dept_list).replace('[','').replace(']','') + """) 
+    group by dept_name, city_name
+    order by avg_price desc 
+    limit 10
+    """))
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Bonus - map
+# ---------------------------------------------------------------------------------------------------------
+
+# Title
+st.markdown("""---""")
+st.header('Bonus Map 📍 - Top 10 cities with highest average m2 price 💸')
+
+min_housing_surface = st.slider(
+    label = 'Min housing surface in m2', 
+    min_value = 0, 
+    max_value = 100, 
+    value = 1
+    )
+
+my_query_results_bonus_1 = execute_sf_query_table("""
+    select 
+        d.name as dept_name,
+        s.city_name,
+        c.lat,
+        c.lon,
+        avg(carrez_surface) as avg_sqm_per_transaction,
+        avg(transaction_value/carrez_surface) as avg_sqm_price_eur
+        
+        from sales as s
+
+    left join dept_info as d
+    on s.dept_code = d.insee_code
+        
+    left join city_info as c
+    on s.city_name = c.city_name
+
+    where carrez_surface >= """ + str(min_housing_surface) + """
+    group by dept_name, s.city_name, c.lat, c.lon
+    order by avg_sqm_price_eur desc
+    limit 10;
+    """)
+
+
+# Display Table
+df_table = my_query_results_bonus_1[['DEPT_NAME', 'CITY_NAME', 'AVG_SQM_PER_TRANSACTION', 'AVG_SQM_PRICE_EUR']]
+df_table.AVG_SQM_PER_TRANSACTION = df_table.AVG_SQM_PER_TRANSACTION.astype('int')
+df_table.AVG_SQM_PRICE_EUR = df_table.AVG_SQM_PRICE_EUR.astype('int')
+
+st.table(df_table)
+
+
+# Display Map
+df_gps = my_query_results_bonus_1[['LAT', 'LON']].rename({'LAT':'lat', 'LON': 'lon'}, axis=1).dropna()
+
+st.map(df_gps)
+
+
+# ---------------------------------------------------------------------------------------------------------
+
+st.markdown("""---""")
+
+# Don't run anything past here while troubleshooting
+st.stop()
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -340,96 +434,3 @@ col_2.metric(
     str(int(three_rooms_avg_sqm_price))+ " €", 
     str(int(three_rooms_avg_sqm_price - two_rooms_avg_sqm_price)) + ' (' + str(100*round((three_rooms_avg_sqm_price-two_rooms_avg_sqm_price)/two_rooms_avg_sqm_price,2)) + " %)"
     )
-
-
-# ---------------------------------------------------------------------------------------------------------
-# Exercise 9 - get the average price of the higher-priced cities in a multi-selection of departments
-# ---------------------------------------------------------------------------------------------------------
-
-# Title
-st.markdown("""---""")
-st.header('Q9 - Average price of the 10 higher-priced cities in a multi-selection of departments ✨')
-
-# Query the list of departments
-dept_list = execute_sf_query_table("select distinct dept_code from sales")['DEPT_CODE'].to_list()
-selected_dept_list = st.multiselect("Please select the departments you want to study", dept_list, default=['06', '13', '33', '59', '69'])
-
-# Exercise Answer
-st.table(execute_sf_query_table("""
-    select 
-        dept_info.name as dept_name,
-        city_name, 
-        round(avg(transaction_value)) as avg_price 
-        
-        from sales
-
-    left join dept_info
-    on sales.dept_code = dept_info.insee_code
-        
-    where dept_code in  (""" + str(selected_dept_list).replace('[','').replace(']','') + """) 
-    group by dept_name, city_name
-    order by avg_price desc 
-    limit 10
-    """))
-
-
-# ---------------------------------------------------------------------------------------------------------
-# Bonus - map
-# ---------------------------------------------------------------------------------------------------------
-
-# Title
-st.markdown("""---""")
-st.header('Bonus Map 📍 - Top 10 cities with highest average m2 price 💸')
-
-min_housing_surface = st.slider(
-    label = 'Min housing surface in m2', 
-    min_value = 0, 
-    max_value = 100, 
-    value = 1
-    )
-
-my_query_results_bonus_1 = execute_sf_query_table("""
-    select 
-        d.name as dept_name,
-        s.city_name,
-        c.lat,
-        c.lon,
-        avg(carrez_surface) as avg_sqm_per_transaction,
-        avg(transaction_value/carrez_surface) as avg_sqm_price_eur
-        
-        from sales as s
-
-    left join dept_info as d
-    on s.dept_code = d.insee_code
-        
-    left join city_info as c
-    on s.city_name = c.city_name
-
-    where carrez_surface >= """ + str(min_housing_surface) + """
-    group by dept_name, s.city_name, c.lat, c.lon
-    order by avg_sqm_price_eur desc
-    limit 10;
-    """)
-
-
-# Display Table
-df_table = my_query_results_bonus_1[['DEPT_NAME', 'CITY_NAME', 'AVG_SQM_PER_TRANSACTION', 'AVG_SQM_PRICE_EUR']]
-df_table.AVG_SQM_PER_TRANSACTION = df_table.AVG_SQM_PER_TRANSACTION.astype('int')
-df_table.AVG_SQM_PRICE_EUR = df_table.AVG_SQM_PRICE_EUR.astype('int')
-
-st.table(df_table)
-
-
-# Display Map
-df_gps = my_query_results_bonus_1[['LAT', 'LON']].rename({'LAT':'lat', 'LON': 'lon'}, axis=1).dropna()
-
-st.map(df_gps)
-
-
-# ---------------------------------------------------------------------------------------------------------
-
-st.markdown("""---""")
-
-# Don't run anything past here while troubleshooting
-st.stop()
-
