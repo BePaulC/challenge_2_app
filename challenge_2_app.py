@@ -54,7 +54,7 @@ def get_table(table_name, limit):
 # ---------------------------------------------------------------------------------------------------------
 
 st.title("❄️ Snowflake & Streamlit ⛄")
-st.header('-🎅- Demo -🎅-')
+st.header('--🎅-- Demo --🎅--')
 
 # Display Dataset
 st.header('Dataset of the housing sales in France')
